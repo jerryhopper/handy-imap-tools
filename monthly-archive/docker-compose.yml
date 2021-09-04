@@ -1,0 +1,14 @@
+version: "2"
+
+
+services:
+  python:
+    build:
+      context: ./../src
+      dockerfile: ./Dockerfile.monthly-archive
+    environment:
+      - MAILBOX_USER=${MAILBOX_USER}
+      - MAILBOX_PASSWORD=${MAILBOX_PASSWORD}
+    #restart: always
+    #volumes:
+    #  - ./docker/src:/app

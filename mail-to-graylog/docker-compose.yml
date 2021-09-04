@@ -1,0 +1,15 @@
+version: "2"
+
+
+services:
+  python:
+    build:
+      context: ./../src
+      dockerfile: ./Dockerfile.mail-to-graylog
+    environment:
+      - MAILBOX_USER=${MAILBOX_USER}
+      - MAILBOX_PASSWORD=${MAILBOX_PASSWORD}
+      - GELF_URL=${GELF_URL}
+      - DELETE_MAIL=${DELETE_MAIL}
+    #volumes:
+    #  - ./docker/src:/app
