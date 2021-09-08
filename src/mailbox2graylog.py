@@ -5,13 +5,15 @@ import datetime
 import argparse
 import json
 import time
-import os
+from datetime import tzinfo
+import os,sys
 import logging
 from imap_tools import MailBox
 from datetime import datetime
 from pygelf import GelfTcpHandler, GelfUdpHandler, GelfTlsHandler, GelfHttpHandler
 import logging
-
+import requests
+import html2text
 
 
 # Start
@@ -92,6 +94,16 @@ print("logging to ", gelf_url )
 
 
 def logEmail(msg,gelf_url ):
+
+    plaintext = msg.text
+    if len(msg.text)<8:
+        h = html2text.HTML2Text()
+        h.ignore_links = True
+        plaintext = h.handle(msg.html)+" -  [HTML2TEXT]"
+
+
+    #            "full_html_message": msg.html,
+
     json = {"_uid": msg.uid ,
             "source": "mailbox2graylog.py",
             "_from": msg.from_,
@@ -99,8 +111,7 @@ def logEmail(msg,gelf_url ):
             "timestamp": msg.date.timestamp(),
             "_date_str": msg.date_str,
             "short_message": msg.subject,
-            "full_message": msg.text,
-            "full_html_message": msg.html,
+            "full_message": plaintext,
             "_from_values": msg.from_values,
             "_to_values": msg.to_values,
             "_cc_values": msg.cc_values,
@@ -123,6 +134,9 @@ def logAndDelete(mailbox ,mailbox_user, mailbox_password,gelf_url,delete):
                 time.sleep(1)
         except:
             print("mailbox.fetch ERROR")
+            print(sys.exc_info()[0])
+            print(sys.exc_info())
+
             pass
 
 
