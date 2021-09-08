@@ -17,6 +17,7 @@ import argparse
 import ssl
 import datetime
 
+#import lib.getemailbody 
 
 
 # function that creates the connection.
@@ -48,7 +49,7 @@ def removeFolder(folderName,conn):
 
 
 
-
+## unused function
 def findAndMove(sourceFolderName,destinationFolderName,conn):
    #
    print("findAndMove email from "+ sourceFolderName + " to "+ destinationFolderName )
@@ -93,40 +94,3 @@ def findAndMove(sourceFolderName,destinationFolderName,conn):
          if result[0] == 'OK':
           result = mov, data = conn.uid('STORE',emailid, '+FLAGS', '(\Deleted Items)')
           conn.expunge()
-
-
-
-
-def get_email_body(body):
-       #print("get_email_body")
-       if body.is_multipart():
-         #print(body.get_payload(decode=True))
-         for payload in body.get_payload():
-             for part in body.walk():
-               #print(part.get_content_type())
-               #print(part.get('Content-Disposition'))
-               if (part.get_content_type() == 'text/plain') and (part.get('Content-Disposition') is None):
-                 #output = part.get_payload()
-                 output = f"{part.get_payload(decode=True)}"
-                 html = output.replace("b'", "")
-                 return html
-               if (part.get_content_type() == 'text/html') and (part.get('Content-Disposition') is None):
-                 #output = part.get_payload(decode=True)
-                 output = f"{part.get_payload(decode=True)}"
-                 html = output.replace("b'", "")
-                 #print(html)
-                 return html
-             #print(output)
-         #return output
-       else:
-         text = f"{body.get_payload(decode=True)}"
-         html = text.replace("b'", "")
-         h = html2text.HTML2Text()
-         h.ignore_links = True
-         output = (h.handle(f'''{html}''').replace("\\r\\n", ""))
-         output = output.replace("'", "")
-         # output in one line
-         #output = output.replace('\n'," ")
-         ##output = output.replace('*', "")
-         return output
-         #return html
