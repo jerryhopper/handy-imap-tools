@@ -18,6 +18,8 @@ RUN pip3 install html2text
 # Add beautifulsoup module
 RUN pip3 install beautifulsoup
 
+RUN pip3 install imap-tools
+
 # Create app dir
 RUN mkdir /app
 
