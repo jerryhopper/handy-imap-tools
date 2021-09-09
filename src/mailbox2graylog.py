@@ -15,15 +15,15 @@ import logging
 import requests
 import html2text
 
-from email.errors import StartBoundryNotFoundDefect,MultipartInvariantViolationDefect
+#from email.errors import StartBoundryNotFoundDefect,MultipartInvariantViolationDefect
 
 #from .consts import MailMessageFlags, UID_PATTERN
 #from .message import MailMessage
 #from .folder import MailBoxFolderManager
 #from .utils import clean_uids, check_command_status, chunks, encode_folder, clean_flags, decode_value
-from .errors import MailboxStarttlsError, MailboxLoginError, MailboxLogoutError, MailboxNumbersError, \
- MailboxFetchError, MailboxExpungeError, MailboxDeleteError, MailboxCopyError, MailboxFlagError, \
- MailboxAppendError, MailboxUidsError
+#from email.errors import MailboxStarttlsError, MailboxLoginError, MailboxLogoutError, MailboxNumbersError, \
+# MailboxFetchError, MailboxExpungeError, MailboxDeleteError, MailboxCopyError, MailboxFlagError, \
+# MailboxAppendError, MailboxUidsError
 
 #'imap_tools.errors.MailboxFetchError'>
 
@@ -118,6 +118,10 @@ def logEmail(msg,gelf_url,trySmaller ):
 
     if trySmaller == True:
         #
+        print("trySmaller")
+        print("length:"+str(len(plaintext)))
+        print("shortl:"+str(len(plaintext[0:600])))
+
         json = {"_uid": msg.uid ,
                 "source": "mailbox2graylog.py",
                 "_from": msg.from_,
@@ -125,7 +129,7 @@ def logEmail(msg,gelf_url,trySmaller ):
                 "timestamp": msg.date.timestamp(),
                 "_date_str": msg.date_str,
                 "short_message": msg.subject,
-                "full_message": plaintext:2500,
+                "full_message": plaintext[0:600]+" -  [HTML2TEXT]...",
                 "_from_values": msg.from_values,
                 "_to_values": msg.to_values,
                 "_cc_values": msg.cc_values,
@@ -159,23 +163,23 @@ def logAndDelete(mailbox ,mailbox_user, mailbox_password,gelf_url,delete):
         try:
             for msg in mailbox.fetch():
                 # Try logging
-                status = logEmail(msg,gelf_url,False)
-                if delete == True and status == 202:
+                status = str(logEmail(msg,gelf_url,False))
+                if delete == True and status == "202":
                     # delete mail
                     mailbox.delete(msg.uid)
-                elif delete == 413:
+                elif delete == True and status == "413":
                     print("graylog rejected!")
                     # Try log
-                    status = logEmail(msg,gelf_url,True)
-                    if status == 202:
+                    status = str(logEmail(msg,gelf_url,True))
+                    if status == "202":
                         # delete mail
                         mailbox.delete(msg.uid)
                     else:
-                        print(status+"  log error")
+                        print(str(status)+"  log error")
                 time.sleep(1)
-        except MailboxFetchError as e:
-            print("mailbox.fetch ERROR")
-            print( e )
+        #except MailboxFetchError as e:
+        #    print("mailbox.fetch ERROR")
+        #    print( e )
         except:
             print("mailbox other ERROR")
             print(sys.exc_info()[0])
