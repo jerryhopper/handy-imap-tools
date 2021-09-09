@@ -129,7 +129,7 @@ def logEmail(msg,gelf_url,trySmaller ):
                 "timestamp": msg.date.timestamp(),
                 "_date_str": msg.date_str,
                 "short_message": msg.subject,
-                "full_message": plaintext[0:600]+" -  [HTML2TEXT]...",
+                "full_message": plaintext[0:1200]+" -  [HTML2TEXT]...",
                 "_from_values": msg.from_values,
                 "_to_values": msg.to_values,
                 "_cc_values": msg.cc_values,
